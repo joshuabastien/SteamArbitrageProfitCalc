@@ -3,8 +3,8 @@ import requests
 def get_steam_market_price(app_id, market_hash_name):
     base_url = "https://steamcommunity.com/market/priceoverview/"
     params = {
-        'country': 'US',
-        'currency': 1,
+        'country': 'CA',
+        'currency': 20,
         'appid': app_id,
         'market_hash_name': market_hash_name
     }
@@ -22,30 +22,10 @@ def get_steam_market_price(app_id, market_hash_name):
         print(f"Error: {e}")
         return None
 
-def convert_to_lira(cad_price, exchange_rate):
-    try:
-        # Remove the dollar sign and convert to float
-        numeric_price = float(cad_price.replace("$", ""))
-        return numeric_price * exchange_rate
-    except ValueError:
-        return None
-    
-def convert_to_cad(usd_price):
-    conversion_rate = 1.34  # 1 USD to CAD
-    try:
-        numeric_price = float(usd_price.replace("$", ""))
-        return "${:.2f}".format(numeric_price * conversion_rate)  # Return as string with dollar sign
-    except ValueError:
-        return None
-
 def display_price_info(market_hash_name, price_data, exchange_rate, skinport_price_cad):
     item_name = market_hash_name
-    lowest_price_usd = price_data.get('lowest_price', 'N/A')
-    median_price_usd = price_data.get('median_price', 'N/A')
-
-    # Convert USD to CAD
-    lowest_price_cad_value = float(lowest_price_usd.replace("$", "").replace(",", "")) * 1.34 if lowest_price_usd != 'N/A' else None
-    median_price_cad_value = float(median_price_usd.replace("$", "").replace(",", "")) * 1.34 if median_price_usd != 'N/A' else None
+    lowest_price_cad_value = float(price_data.get('lowest_price', 'N/A').replace("CDN$ ", "")) if price_data.get('lowest_price', 'N/A') != 'N/A' else None
+    median_price_cad_value = float(price_data.get('median_price', 'N/A').replace("CDN$ ", "")) if price_data.get('lowest_price', 'N/A') != 'N/A' else None
 
     # Convert CAD prices to Lira
     lowest_price_lira = lowest_price_cad_value * exchange_rate if lowest_price_cad_value is not None else None
