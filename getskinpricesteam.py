@@ -100,11 +100,11 @@ def display_price_info(market_hash_name, cad_price_data, lira_price_data, skinpo
 if __name__ == "__main__":
     app_id = 730  # CS:GO's App ID
 
-    print("Is the weapon a StatTrak™ weapon? (Y/N)")
-    stattrak = True if input().strip() == "Y" else False
+    print("Is the weapon a StatTrak™ weapon? (y/n)")
+    stattrak = True if input().strip() == "y" else False
 
-    print("Is the weapon a Knife? (Y/N)")
-    knife = True if input().strip() == "Y" else False
+    print("Is the weapon a Knife or Glove? (y/n)")
+    knife = True if input().strip() == "y" else False
     
     # Input the weapon type, skin name, and condition separately
     print("Enter the weapon type (e.g., P250 or Flip Knife):")
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     skin_name = input().strip()
 
     print("Enter the condition of the item (e.g., Battle-Scarred or bs):")
-    temp = input().strip().lower()
+    temp = input().strip()
     match temp:
         case "fn":
             item_condition = "Factory New"
