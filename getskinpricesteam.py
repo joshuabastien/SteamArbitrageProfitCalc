@@ -162,7 +162,7 @@ def on_submit(stattrak_var, knife_glove_var, weapon_type_entry, skin_name_entry,
 
 def show_output_window(market_hash_name, output_text):
     output_window = tk.Toplevel()
-    output_window.title(f"Details for: {market_hash_name}")
+    output_window.title(f"{market_hash_name}")
 
     # Use Text widget for better formatting
     # Adjust the height and width as needed
