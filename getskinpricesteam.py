@@ -45,15 +45,14 @@ def get_steam_market_price_lira(app_id, market_hash_name):
         return None
 
 def display_price_info(market_hash_name, cad_price_data, lira_price_data, skinport_price_cad):
-    item_name = market_hash_name
 
     # Get floats of cad values
     lowest_price_cad_value = float(cad_price_data.get('lowest_price', 'N/A').replace("CDN$ ", "")) if cad_price_data.get('lowest_price', 'N/A') != 'N/A' else None
-    median_price_cad_value = float(cad_price_data.get('median_price', 'N/A').replace("CDN$ ", "")) if cad_price_data.get('lowest_price', 'N/A') != 'N/A' else None
+    median_price_cad_value = float(cad_price_data.get('median_price', 'N/A').replace("CDN$ ", "")) if cad_price_data.get('median_price', 'N/A') != 'N/A' else None
 
     # Get floats of lira values
-    lowest_price_lira_value = float(lira_price_data.get('lowest_price', 'N/A').replace(" TL", "").replace("," , ".")) if lira_price_data.get('lowest_price', 'N/A') != 'N/A' else None
-    median_price_lira_value = float(lira_price_data.get('median_price', 'N/A').replace(" TL", "").replace("," , ".")) if lira_price_data.get('lowest_price', 'N/A') != 'N/A' else None
+    lowest_price_lira_value = float(lira_price_data.get('lowest_price', 'N/A').replace(" TL", "").replace(".", "").replace("," , ".")) if lira_price_data.get('lowest_price', 'N/A') != 'N/A' else None
+    median_price_lira_value = float(lira_price_data.get('median_price', 'N/A').replace(" TL", "").replace(".", "").replace("," , ".")) if lira_price_data.get('median_price', 'N/A') != 'N/A' else None
 
     # Adjusted calculations for lowest price
     adjusted_lowest_price_cad = lowest_price_cad_value / 1.15 - 0.01 if lowest_price_cad_value is not None else None
@@ -69,7 +68,7 @@ def display_price_info(market_hash_name, cad_price_data, lira_price_data, skinpo
     divider = "-" * 50  # Horizontal divider
 
     print(divider)
-    print(f"Details for: {item_name}".center(50))
+    print(f"Details for: {market_hash_name}".center(50))
     print(divider)
 
     # Skinport details
@@ -100,23 +99,49 @@ def display_price_info(market_hash_name, cad_price_data, lira_price_data, skinpo
 
 if __name__ == "__main__":
     app_id = 730  # CS:GO's App ID
+
+    print("Is the weapon a StatTrak™ weapon? (Y/N)")
+    stattrak = True if input().strip() == "Y" else False
+
+    print("Is the weapon a Knife? (Y/N)")
+    knife = True if input().strip() == "Y" else False
     
-    # Input the gun type, skin name, and condition separately
-    print("Enter the gun type (e.g., 'P250'):")
-    gun_type = input().strip()
+    # Input the weapon type, skin name, and condition separately
+    print("Enter the weapon type (e.g., P250 or Flip Knife):")
+    weapon_type = input().strip()
     
-    print("Enter the skin name (e.g., 'Apep's Curse'):")
+    print("Enter the skin name (e.g., Apep's Curse):")
     skin_name = input().strip()
 
-    print("Enter the condition of the item (e.g., 'Battle-Scarred'):")
-    item_condition = input().strip()
+    print("Enter the condition of the item (e.g., Battle-Scarred or bs):")
+    temp = input().strip().lower()
+    match temp:
+        case "fn":
+            item_condition = "Factory New"
+        case "mw":
+            item_condition = "Minimal Wear"
+        case "ft":
+            item_condition = "Field-Tested"
+        case "ww":
+            item_condition = "Well-Worn"
+        case "bs":
+            item_condition = "Battle-Scarred"
+        case _:
+            item_condition = temp
 
     # Concatenate the gun type, skin name, and condition
-    market_hash_name = f"{gun_type} | {skin_name} ({item_condition})"
+    if stattrak and knife:
+        market_hash_name = "★ " + f"StatTrak™ {weapon_type} | {skin_name} ({item_condition})"
+    elif stattrak:
+        market_hash_name = f"StatTrak™ {weapon_type} | {skin_name} ({item_condition})"
+    elif knife:
+        market_hash_name = "★ " + f"{weapon_type} | {skin_name} ({item_condition})"
+    else:
+        market_hash_name = f"{weapon_type} | {skin_name} ({item_condition})"
 
-    print("Enter the Skinport price in CAD (e.g., CA$59.71):")
+    print("Enter the Skinport price in CAD (e.g., $59.71 or 59.71):")
     try:
-        skinport_price_cad = float(input().strip().replace("CA$", "").replace(",", ""))
+        skinport_price_cad = float(input().strip().replace("$", ""))
     except ValueError:
         print("Invalid input. Please enter a valid price in format: CA$59.71")
         exit()
