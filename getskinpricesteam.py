@@ -1,6 +1,7 @@
 import requests
 import tkinter as tk
 from tkinter import ttk
+from tkinter import *
 
 def get_steam_market_price_cad(app_id, market_hash_name):
     base_url = "https://steamcommunity.com/market/priceoverview/"
@@ -102,13 +103,13 @@ def display_price_info(market_hash_name, cad_price_data, lira_price_data, skinpo
 
     return output_data
 
-def on_submit(stattrak_var, knife_glove_var, weapon_type_entry, skin_name_entry, item_condition_entry, skinport_price_entry):
+def on_submit(stattrak_var, knife_glove_var, weapon_type_entry, skin_name_entry, cond_list_entry, skinport_price_entry):
     # Getting the values from the entry boxes
     stattrak = stattrak_var.get().strip().lower() == 'y'
     knife = knife_glove_var.get().strip().lower() == 'y'
     weapon_type = weapon_type_entry.get().strip()
     skin_name = skin_name_entry.get().strip()
-    item_condition = item_condition_entry.get().strip()
+    item_condition = cond_list_entry.get().strip()
     try:
         skinport_price_cad = float(skinport_price_entry.get().strip().replace("$", ""))
     except ValueError:
@@ -118,36 +119,25 @@ def on_submit(stattrak_var, knife_glove_var, weapon_type_entry, skin_name_entry,
     # The following section is adapted from your original main function
     app_id = 730  # CS:GO's App ID
 
-    # Create market_hash_name from the given input fields
-    match item_condition:
-        case "fn":
-            condition = "Factory New"
-        case "mw":
-            condition = "Minimal Wear"
-        case "ft":
-            condition = "Field-Tested"
-        case "ww":
-            condition = "Well-Worn"
-        case "bs":
-            condition = "Battle-Scarred"
-        case _:
-            condition = item_condition
-
     if stattrak and knife:
-        market_hash_name = "★ " + f"StatTrak™ {weapon_type} | {skin_name} ({condition})"
+        market_hash_name = "★ " + f"StatTrak™ {weapon_type} | {skin_name} ({item_condition})"
     elif stattrak:
-        market_hash_name = f"StatTrak™ {weapon_type} | {skin_name} ({condition})"
+        market_hash_name = f"StatTrak™ {weapon_type} | {skin_name} ({item_condition})"
     elif knife:
-        market_hash_name = "★ " + f"{weapon_type} | {skin_name} ({condition})"
+        market_hash_name = "★ " + f"{weapon_type} | {skin_name} ({item_condition})"
     else:
-        market_hash_name = f"{weapon_type} | {skin_name} ({condition})"
+        market_hash_name = f"{weapon_type} | {skin_name} ({item_condition})"
     
     cad_price = get_steam_market_price_cad(app_id, market_hash_name)
     lira_price = get_steam_market_price_lira(app_id, market_hash_name)
 
     if cad_price and lira_price:
         output_data = []
-        output_data.extend(display_price_info(market_hash_name, cad_price, lira_price, skinport_price_cad))
+        try: 
+            output_data.extend(display_price_info(market_hash_name, cad_price, lira_price, skinport_price_cad))
+        except TypeError:
+            show_output_window(market_hash_name, "Item too valuable to be sold on steam ($2000 limit).")
+            return
         show_output_window(market_hash_name, "\n".join(output_data))
     else:
         show_output_window(market_hash_name, "Couldn't fetch the price.")
@@ -157,7 +147,7 @@ def on_submit(stattrak_var, knife_glove_var, weapon_type_entry, skin_name_entry,
     knife_glove_var.set('n')
     weapon_type_entry.delete(0, tk.END)
     skin_name_entry.delete(0, tk.END)
-    item_condition_entry.delete(0, tk.END)
+    cond_list_entry.set("Factory New")
     skinport_price_entry.delete(0, tk.END)
 
 def show_output_window(market_hash_name, output_text):
@@ -202,8 +192,11 @@ def create_gui():
     skin_name_entry = ttk.Entry(window)
     skin_name_entry.grid(row=3, column=1, padx=10, pady=5)
 
-    ttk.Label(window, text="Enter the condition of the item:").grid(row=4, column=0, sticky=tk.W, padx=10, pady=5)
-    item_condition_entry = ttk.Entry(window)
+    # Condition drop down menu
+    ttk.Label(window, text="Choose the condition of the item:").grid(row=4, column=0, sticky=tk.W, padx=10, pady=5)
+    cond_list_entry = StringVar(window)
+    cond_list_entry.set("Factory New")
+    item_condition_entry = ttk.OptionMenu(window, cond_list_entry, "Factory New", "Factory New", "Minimal Wear", "Field-Tested", "Well-Worn", "Battle-Scarred")
     item_condition_entry.grid(row=4, column=1, padx=10, pady=5)
 
     ttk.Label(window, text="Enter the Skinport price in CAD:").grid(row=5, column=0, sticky=tk.W, padx=10, pady=5)
@@ -211,7 +204,7 @@ def create_gui():
     skinport_price_entry.grid(row=5, column=1, padx=10, pady=5)
 
     # Submit button
-    submit_button = ttk.Button(window, text="Submit", command=lambda: on_submit(stattrak_var, knife_glove_var, weapon_type_entry, skin_name_entry, item_condition_entry, skinport_price_entry))
+    submit_button = ttk.Button(window, text="Submit", command=lambda: on_submit(stattrak_var, knife_glove_var, weapon_type_entry, skin_name_entry, cond_list_entry, skinport_price_entry))
     submit_button.grid(row=6, column=0, columnspan=2, pady=15)
 
     # Start the GUI loop
