@@ -3,7 +3,7 @@
 This program helps users to determine the potential profit from arbitrage opportunities between the Steam market and Skinport for CS:GO skins.
 
 ![image](https://github.com/joshuabastien/SteamArbitrageProfitCalc/assets/77856927/5ea0ea74-bde1-4beb-9368-5a2ed63a8f36)
-![image](https://github.com/joshuabastien/SteamArbitrageProfitCalc/assets/77856927/6dfbc2a4-5d28-49c6-a80d-e2cc01766a60)
+![image](https://github.com/joshuabastien/SteamArbitrageProfitCalc/assets/77856927/d2408d1c-9011-4c5c-9b9d-be7557e10971)
 
 (The 'Difference' is the profit of that item and the 'Ratio' is the ROI of buying that item.)
 
@@ -21,6 +21,6 @@ This program helps users to determine the potential profit from arbitrage opport
 
 ## Usage
 
-1. Run the main program.
+1. Run the main program (getskinpricesteam.py).
 2. Use the GUI to input the details of the skin you want to check.
 3. Click on the "Submit" button to get the price details.
